@@ -79,7 +79,7 @@ public class ApiTests {
                 when().
                 get(ALL_OBJECTS_END_POINT).
                 then().
-                statusCode(FAILURE_CODE).
+                statusCode(SUCCESS_CODE).
                 assertThat().body("", anyOf(nullValue(), empty()));
     }
 
@@ -90,7 +90,7 @@ public class ApiTests {
                 when().
                 get(ALL_OBJECTS_END_POINT).
                 then().
-                statusCode(FAILURE_CODE).
+                statusCode(SUCCESS_CODE).
                 assertThat().body("", anyOf(nullValue(), empty()));
     }
 
@@ -101,7 +101,7 @@ public class ApiTests {
                 when().
                 get(ALL_OBJECTS_END_POINT).
                 then().
-                statusCode(FAILURE_CODE).
+                statusCode(SUCCESS_CODE).
                 assertThat().body("", anyOf(nullValue(), empty()));
     }
 
@@ -112,7 +112,7 @@ public class ApiTests {
                 when().
                 get(ALL_OBJECTS_END_POINT).
                 then().
-                statusCode(FAILURE_CODE).
+                statusCode(SUCCESS_CODE).
                 assertThat().body("", anyOf(nullValue(), empty()));
     }
 }
