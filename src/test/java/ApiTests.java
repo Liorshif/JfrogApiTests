@@ -1,5 +1,3 @@
-import com.google.common.base.Objects;
-import org.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -7,7 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 
 public class ApiTests {
 
@@ -54,100 +55,65 @@ public class ApiTests {
 
     @Test
     void testIsSingleObjectFoundInAllObjectsEndpoint() {
-        User[] allObjectResponse = given()
+        Posts[] allObjectResponse = given()
                 .when()
                 .get(ALL_OBJECTS_END_POINT)
                 .then()
                 .extract()
-                .as(User[].class);
-        List<User> users = Arrays.asList(allObjectResponse);
-        User singleObjectResponse = given()
+                .as(Posts[].class);
+        List<Posts> posts = Arrays.asList(allObjectResponse);
+        Posts singleObjectResponse = given()
                 .when()
                 .get(ALL_OBJECTS_END_POINT + "1")
                 .then()
                 .extract()
-                .as(User.class);
+                .as(Posts.class);
 
-        Assert.assertTrue(users.contains(singleObjectResponse));
-    }
-
-    static class User {
-        int userId;
-        int id;
-        String title;
-        String body;
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            User user = (User) o;
-            return userId == user.userId && id == user.id &&
-                    Objects.equal(title, user.title) && Objects.equal(body, user.body);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(userId, id, title, body);
-        }
-
-        public User() {
-        }
-
-        public User(int userId, int id, String title, String body) {
-            this.userId = userId;
-            this.id = id;
-            this.title = title;
-            this.body = body;
-        }
-
-        public int getUserId() {
-            return userId;
-        }
-
-        public void setUserId(int userId) {
-            this.userId = userId;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public String getBody() {
-            return body;
-        }
-
-        public void setBody(String body) {
-            this.body = body;
-        }
+        Assert.assertTrue(posts.contains(singleObjectResponse));
     }
 
     @Test
-    void testNotExistingObjectNotFoundInAllObjectsEndpoint() {
-        JSONObject notExistingObject = new JSONObject();
-        notExistingObject.put("name", "sonoo");
-        notExistingObject.put("age", Integer.valueOf(27));
-        notExistingObject.put("salary", "600000");
+    void testInvalidTypeOfIdParamGetRequest() {
+        given().
+                param("id", "lior").
+                when().
+                get(ALL_OBJECTS_END_POINT).
+                then().
+                statusCode(FAILURE_CODE).
+                assertThat().body("", anyOf(nullValue(), empty()));
+    }
 
-        String strNotExsistingObject = notExistingObject.toString();
+    @Test
+    void testInvalidTypeOfUserIdParamGetRequest() {
+        given().
+                param("userId", "hello").
+                when().
+                get(ALL_OBJECTS_END_POINT).
+                then().
+                statusCode(FAILURE_CODE).
+                assertThat().body("", anyOf(nullValue(), empty()));
+    }
 
-        String allObjectResponse = given()
-                .when()
-                .get(ALL_OBJECTS_END_POINT)
-                .getBody().asString();
-        Assert.assertFalse(allObjectResponse.contains(strNotExsistingObject));
+    @Test
+    void testInvalidTypeOfTitleParamGetRequest() {
+        given().
+                param("title", 55).
+                when().
+                get(ALL_OBJECTS_END_POINT).
+                then().
+                statusCode(FAILURE_CODE).
+                assertThat().body("", anyOf(nullValue(), empty()));
+    }
+
+    @Test
+    void testInvalidTypeOfBodyParamGetRequest() {
+        given().
+                param("body", 2323).
+                when().
+                get(ALL_OBJECTS_END_POINT).
+                then().
+                statusCode(FAILURE_CODE).
+                assertThat().body("", anyOf(nullValue(), empty()));
     }
 }
 
